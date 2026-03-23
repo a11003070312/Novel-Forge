@@ -2,7 +2,7 @@
 
 > 专为长篇小说创作打造的可视化管理工具
 
-搭配claude code使用
+搭配 Claude Code / Codex 使用
 一个优雅的本地小说创作辅助系统，帮助作者管理复杂的长篇小说内容。通过 Markdown 文件存储内容，配合精美的可视化界面，让创作灵感自由流动。
 
 ![深色主题](https://img.shields.io/badge/theme-dark-0f172a)
@@ -168,13 +168,13 @@ python scripts/vector-search.py --status
 1. 打开"总大纲"查看整体结构
 2. 切换到"人物关系"查看角色网络
 3. 检查"伏笔追踪"确认待回收的线索
-4. 用 Claude Code 编辑 `volumes/vol-XX.md` 添加新卷
+4. 用 Claude Code 或 Codex 编辑 `volumes/vol-XX.md` 添加新卷
 
 ### 场景 2：管理人物关系
 1. 打开"人物关系"模块
 2. 查看 SVG 关系图谱
 3. 点击节点查看详细设定
-4. 用 Claude Code 编辑 `characters/` 下的文件
+4. 用 Claude Code 或 Codex 编辑 `characters/` 下的文件
 
 ### 场景 3：追踪伏笔
 1. 打开"伏笔追踪"看板
@@ -186,13 +186,13 @@ python scripts/vector-search.py --status
 1. 打开"时间线"模块
 2. 横向拖动查看事件
 3. 确认故事时间逻辑
-4. 用 Claude Code 编辑 `timeline.md`
+4. 用 Claude Code 或 Codex 编辑 `timeline.md`
 
 ## 💡 工作流程
 
 **推荐的创作流程**：
 
-1. **用 Claude Code 编辑内容**
+1. **用 Claude Code 或 Codex 编辑内容**
    - 直接编辑 Markdown 文件
    - 利用 AI 辅助创作
    - 版本控制（Git）
@@ -296,7 +296,7 @@ MIT License - 自由使用和修改
 - **Vue.js** - 响应式框架
 - **Marked.js** - Markdown 渲染
 - **Google Fonts** - 优雅字体
-- **Claude Code** - AI 辅助创作
+- **Claude Code / Codex** - AI 辅助创作
 
 ---
 
