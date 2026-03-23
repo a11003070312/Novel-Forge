@@ -47,6 +47,20 @@
 
 ### 启动步骤
 
+#### 方法一：使用批处理文件（推荐）
+
+**Windows 用户**：
+1. 双击 `start.bat` 启动服务
+2. 浏览器访问：http://localhost:8080/viewer/
+3. 完成后双击 `stop.bat` 停止服务
+
+**功能特点**：
+- 自动检测端口占用
+- 自动停止旧服务
+- 一键启动/停止
+
+#### 方法二：手动启动
+
 1. **克隆或下载项目**
 ```bash
 cd 你的文件夹
@@ -62,6 +76,9 @@ python -m http.server 8080
 http://localhost:8080/viewer/
 ```
 
+4. **停止服务**
+- 按 `Ctrl + C` 停止服务
+
 就这么简单！无需安装依赖，无需构建步骤。
 
 ## 📁 文件结构
@@ -69,6 +86,8 @@ http://localhost:8080/viewer/
 ```
 道痕_doubao/
 ├── README.md                    # 项目说明
+├── start.bat                    # 启动服务（Windows）
+├── stop.bat                     # 停止服务（Windows）
 ├── outline.md                   # 总大纲
 ├── timeline.md                  # 时间线
 ├── worldbuilding/               # 世界观设定
