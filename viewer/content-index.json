@@ -1,0 +1,68 @@
+{
+  "modules": {
+    "outline": "outline.md",
+    "worldbuilding": "worldbuilding/world.md",
+    "volumes": "volumes/vol-01.md"
+  },
+  "searchFiles": [
+    "outline.md",
+    "timeline.md",
+    "worldbuilding/world.md",
+    "worldbuilding/combat-system.md",
+    "volumes/vol-01.md",
+    "clues/foreshadowing.md",
+    "characters/protagonists/主角.md",
+    "characters/key-figures/林轩.md",
+    "characters/key-figures/苏婉儿.md",
+    "characters/key-figures/赵无极.md"
+  ],
+  "novelFulltext": [
+    {
+      "id": "vol-01",
+      "title": "第一卷：初入修仙界",
+      "chapters": [
+        {
+          "id": "ch-001",
+          "title": "第1章：平凡少年",
+          "path": "novel-fulltext/卷一/第001章-平凡少年.md"
+        },
+        {
+          "id": "ch-002",
+          "title": "第2章：奇遇",
+          "path": "novel-fulltext/卷一/第002章-奇遇.md"
+        },
+        {
+          "id": "ch-003",
+          "title": "第3章：踏入修仙路",
+          "path": "novel-fulltext/卷一/第003章-踏入修仙路.md"
+        }
+      ]
+    }
+  ],
+  "keyCharacters": [
+    {
+      "id": "lin-xuan",
+      "name": "林轩",
+      "title": "主角 / 道痕解读者",
+      "highlight": "资质平平但逻辑极强，靠“规律推演”破局。",
+      "path": "characters/key-figures/林轩.md",
+      "tags": ["主角", "智斗", "道痕", "成长线"]
+    },
+    {
+      "id": "su-waner",
+      "name": "苏婉儿",
+      "title": "关键盟友 / 隐藏身份",
+      "highlight": "表面温和，实则肩负家族任务，与主角互相试探。",
+      "path": "characters/key-figures/苏婉儿.md",
+      "tags": ["关键配角", "盟友", "悬念线"]
+    },
+    {
+      "id": "zhao-wuji",
+      "name": "赵无极",
+      "title": "主线反派 / 魔道执行者",
+      "highlight": "追踪主角道痕能力，试图夺取传承核心。",
+      "path": "characters/key-figures/赵无极.md",
+      "tags": ["反派", "宿敌", "冲突线"]
+    }
+  ]
+}

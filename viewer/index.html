@@ -36,6 +36,10 @@
             <span class="nav-icon">◉</span>
             <span class="nav-label">人物关系</span>
           </div>
+          <div class="nav-item" @click="loadModule('keyCharacters')" :class="{active: currentModule === 'keyCharacters'}">
+            <span class="nav-icon">◎</span>
+            <span class="nav-label">重点人物</span>
+          </div>
           <div class="nav-item" @click="loadModule('timeline')" :class="{active: currentModule === 'timeline'}">
             <span class="nav-icon">◐</span>
             <span class="nav-label">时间线</span>
@@ -47,6 +51,10 @@
           <div class="nav-item" @click="loadModule('volumes')" :class="{active: currentModule === 'volumes'}">
             <span class="nav-icon">◒</span>
             <span class="nav-label">卷章</span>
+          </div>
+          <div class="nav-item" @click="loadModule('novelFulltext')" :class="{active: currentModule === 'novelFulltext'}">
+            <span class="nav-icon">◧</span>
+            <span class="nav-label">小说全文</span>
           </div>
         </nav>
         <div class="sidebar-footer">
@@ -82,6 +90,14 @@
               <div class="stat-label">人物</div>
             </div>
             <div class="stat-card">
+              <div class="stat-value">{{ stats.keyCharacters }}</div>
+              <div class="stat-label">重点人物</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ stats.chapters }}</div>
+              <div class="stat-label">全文章节</div>
+            </div>
+            <div class="stat-card">
               <div class="stat-value">{{ stats.clues }}</div>
               <div class="stat-label">伏笔</div>
             </div>
@@ -105,6 +121,67 @@
                 <text :x="node.x" :y="node.y" class="character-name" text-anchor="middle" dy="5">{{ node.name }}</text>
               </g>
             </svg>
+          </div>
+        </div>
+        <div v-else-if="currentModule === 'keyCharacters'" class="key-characters-module">
+          <h2 class="page-title">重点人物</h2>
+          <div class="key-characters-layout">
+            <aside class="key-characters-list">
+              <button
+                v-for="character in keyCharacters"
+                :key="character.id"
+                @click="openKeyCharacter(character)"
+                :class="['key-character-item', {active: selectedKeyCharacter && selectedKeyCharacter.id === character.id}]"
+              >
+                <div class="key-character-name">{{ character.name }}</div>
+                <div class="key-character-title">{{ character.title }}</div>
+                <div class="key-character-highlight">{{ character.highlight }}</div>
+              </button>
+            </aside>
+            <section class="key-characters-detail">
+              <div class="content-header">
+                <h3 class="sub-title">{{ selectedKeyCharacter ? selectedKeyCharacter.name : '请选择人物' }}</h3>
+                <div class="content-actions" v-if="selectedKeyCharacter">
+                  <button @click="copyContent(keyCharacterContent)" class="action-btn">复制</button>
+                  <button @click="downloadFile(keyCharacterFilename, keyCharacterContent)" class="action-btn">下载</button>
+                </div>
+              </div>
+              <div v-if="selectedKeyCharacter && selectedKeyCharacter.tags" class="tag-row">
+                <span v-for="tag in selectedKeyCharacter.tags" :key="tag" class="tag-chip">{{ tag }}</span>
+              </div>
+              <div v-if="keyCharacterRenderedContent" class="markdown-body" v-html="keyCharacterRenderedContent"></div>
+              <div v-else class="empty-tip">请选择左侧人物查看详细档案</div>
+            </section>
+          </div>
+        </div>
+        <div v-else-if="currentModule === 'novelFulltext'" class="novel-module">
+          <h2 class="page-title">小说全文</h2>
+          <div class="novel-layout">
+            <aside class="novel-tree">
+              <div class="tree-root">小说全文</div>
+              <div v-for="volume in novelTree" :key="volume.id" class="tree-volume-group">
+                <div class="tree-volume-title">{{ volume.title }}</div>
+                <button
+                  v-for="chapter in volume.chapters"
+                  :key="chapter.id"
+                  @click="openNovelChapter(chapter)"
+                  :class="['tree-chapter-btn', {active: selectedNovelChapter && selectedNovelChapter.id === chapter.id}]"
+                >
+                  {{ chapter.title }}
+                </button>
+              </div>
+            </aside>
+            <section class="novel-content">
+              <div class="content-header">
+                <h3 class="sub-title">{{ novelCurrentTitle || '请选择章节' }}</h3>
+                <div class="content-actions" v-if="novelCurrentContent">
+                  <button @click="copyContent(novelCurrentContent)" class="action-btn">复制</button>
+                  <button @click="downloadFile(novelCurrentFilename, novelCurrentContent)" class="action-btn">下载</button>
+                </div>
+              </div>
+              <div v-if="novelRenderedContent" class="markdown-body" v-html="novelRenderedContent"></div>
+              <div v-else class="empty-tip">点击左侧章节标题阅读正文</div>
+            </section>
           </div>
         </div>
         <div v-else-if="currentModule === 'timeline'" class="timeline-module">

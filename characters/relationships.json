@@ -1,0 +1,16 @@
+{
+  "nodes": [
+    { "id": "lin-xuan", "name": "林轩", "x": 420, "y": 220, "radius": 50, "type": "main" },
+    { "id": "jian-chen", "name": "剑尘真人", "x": 240, "y": 110, "radius": 42, "type": "ally" },
+    { "id": "su-waner", "name": "苏婉儿", "x": 610, "y": 130, "radius": 40, "type": "ally" },
+    { "id": "zhang-yunfei", "name": "张云飞", "x": 640, "y": 320, "radius": 38, "type": "ally" },
+    { "id": "zhao-wuji", "name": "赵无极", "x": 410, "y": 380, "radius": 45, "type": "enemy" }
+  ],
+  "edges": [
+    { "id": "edge-1", "x1": 240, "y1": 110, "x2": 420, "y2": 220, "label": "师徒" },
+    { "id": "edge-2", "x1": 610, "y1": 130, "x2": 420, "y2": 220, "label": "盟友/试探" },
+    { "id": "edge-3", "x1": 640, "y1": 320, "x2": 420, "y2": 220, "label": "同门" },
+    { "id": "edge-4", "x1": 410, "y1": 380, "x2": 420, "y2": 220, "label": "宿敌" },
+    { "id": "edge-5", "x1": 610, "y1": 130, "x2": 410, "y2": 380, "label": "旧怨" }
+  ]
+}

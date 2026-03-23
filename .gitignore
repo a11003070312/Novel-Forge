@@ -25,3 +25,6 @@ Thumbs.db
 
 # Code index
 .cocoindex_code/
+
+# Vector index
+.vector-db/

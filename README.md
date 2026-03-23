@@ -81,6 +81,46 @@ http://localhost:8080/viewer/
 
 就这么简单！无需安装依赖，无需构建步骤。
 
+## 🧠 向量数据库初始化（语义检索）
+
+项目已内置向量检索脚本，可对小说正文、人物档案、伏笔、时间线做语义搜索。
+
+### 1) 安装依赖（首次）
+
+```bash
+pip install -r scripts/requirements-vector.txt
+```
+
+### 2) 检查环境状态
+
+```bash
+python scripts/check-vector.py
+```
+
+返回值说明：
+- `DEPS_MISSING: ...`：缺少依赖，需要先安装
+- `INDEX_MISSING`：依赖已就绪，但索引未建立
+- `VECTOR_OK`：依赖与索引均就绪
+
+### 3) 建立/重建索引
+
+```bash
+python scripts/vector-search.py --rebuild
+```
+
+### 4) 查询示例
+
+```bash
+python scripts/vector-search.py "林轩和苏婉儿的关系变化"
+python scripts/vector-search.py "传承线索在第几章推进" --top 8
+python scripts/vector-search.py --status
+```
+
+说明：
+- 首次构建会下载中文 embedding 模型（约数百 MB）
+- 索引目录为 `.vector-db/`（已加入 `.gitignore`）
+- 新增章节后建议执行一次 `--rebuild`
+
 ## 📁 文件结构
 
 ```
@@ -106,6 +146,11 @@ http://localhost:8080/viewer/
 │   ├── foreshadowing.md         # 伏笔追踪
 │   ├── plot-threads.md          # 线索追踪
 │   └── mysteries.md             # 未解之谜
+├── novel-fulltext/              # 小说正文（按卷/章组织）
+├── scripts/                     # 向量检索脚本与依赖清单
+│   ├── vector-search.py
+│   ├── check-vector.py
+│   └── requirements-vector.txt
 ├── docs/                        # 文档
 │   └── plans/                   # 设计文档
 └── viewer/                      # 可视化界面
@@ -232,8 +277,8 @@ tags: [主角, 剑修, 天才]
 
 ### 添加新模块
 1. 在根目录创建新的 Markdown 文件
-2. 在 `viewer/app.js` 的 `allFiles` 数组中添加路径
-3. 在 `viewer/index.html` 导航栏添加入口
+2. 在 `viewer/content-index.json` 维护模块路径、搜索路径、卷章树
+3. 在 `viewer/index.html` 导航栏添加入口（如新增独立模块）
 
 ## 🤝 贡献
 
