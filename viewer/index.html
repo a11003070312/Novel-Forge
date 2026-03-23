@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>道痕 - 创作工坊</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="logo">
+          <h1>道痕</h1>
+          <p class="subtitle">创作工坊</p>
+        </div>
+        <nav class="nav-menu">
+          <div class="nav-item" @click="loadModule('dashboard')" :class="{active: currentModule === 'dashboard'}">
+            <span class="nav-icon">◆</span>
+            <span class="nav-label">仪表盘</span>
+          </div>
+          <div class="nav-item" @click="loadModule('outline')" :class="{active: currentModule === 'outline'}">
+            <span class="nav-icon">◇</span>
+            <span class="nav-label">总大纲</span>
+          </div>
+          <div class="nav-item" @click="loadModule('worldbuilding')" :class="{active: currentModule === 'worldbuilding'}">
+            <span class="nav-icon">◈</span>
+            <span class="nav-label">世界观</span>
+          </div>
+          <div class="nav-item" @click="loadModule('characters')" :class="{active: currentModule === 'characters'}">
+            <span class="nav-icon">◉</span>
+            <span class="nav-label">人物关系</span>
+          </div>
+          <div class="nav-item" @click="loadModule('timeline')" :class="{active: currentModule === 'timeline'}">
+            <span class="nav-icon">◐</span>
+            <span class="nav-label">时间线</span>
+          </div>
+          <div class="nav-item" @click="loadModule('clues')" :class="{active: currentModule === 'clues'}">
+            <span class="nav-icon">◑</span>
+            <span class="nav-label">伏笔追踪</span>
+          </div>
+          <div class="nav-item" @click="loadModule('volumes')" :class="{active: currentModule === 'volumes'}">
+            <span class="nav-icon">◒</span>
+            <span class="nav-label">卷章</span>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="search-trigger" @click="toggleSearch">
+            <span class="nav-icon">⌕</span>
+            <span class="nav-label">搜索</span>
+          </div>
+        </div>
+      </aside>
+      <main class="main-content">
+        <div v-if="showSearch" class="search-panel">
+          <div class="search-header">
+            <input type="text" v-model="searchQuery" @input="handleSearch" placeholder="搜索内容..." class="search-input" autofocus>
+            <button @click="toggleSearch" class="close-search">✕</button>
+          </div>
+          <div v-if="searchResults.length > 0" class="search-results">
+            <div v-for="result in searchResults" :key="result.path" class="search-result-card" @click="viewFile(result.path)">
+              <div class="result-path">{{ result.path }}</div>
+              <div class="result-snippet" v-html="result.snippet"></div>
+            </div>
+          </div>
+          <div v-else-if="searchQuery" class="no-results">未找到匹配结果</div>
+        </div>
+        <div v-if="currentModule === 'dashboard'" class="dashboard">
+          <h2 class="page-title">创作概览</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ stats.volumes }}</div>
+              <div class="stat-label">卷章</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ stats.characters }}</div>
+              <div class="stat-label">人物</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ stats.clues }}</div>
+              <div class="stat-label">伏笔</div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="currentModule === 'characters'" class="characters-module">
+          <h2 class="page-title">人物关系图</h2>
+          <div class="relationship-graph">
+            <svg ref="relationshipSvg" class="relationship-svg">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                  <polygon points="0 0, 10 3, 0 6" fill="#9ca3af" />
+                </marker>
+              </defs>
+              <g v-for="edge in relationshipEdges" :key="edge.id">
+                <line :x1="edge.x1" :y1="edge.y1" :x2="edge.x2" :y2="edge.y2" class="relationship-line" marker-end="url(#arrowhead)" />
+                <text :x="(edge.x1 + edge.x2) / 2" :y="(edge.y1 + edge.y2) / 2 - 8" class="relationship-label">{{ edge.label }}</text>
+              </g>
+              <g v-for="node in relationshipNodes" :key="node.id">
+                <circle :cx="node.x" :cy="node.y" :r="node.radius" :class="['character-node', node.type]" />
+                <text :x="node.x" :y="node.y" class="character-name" text-anchor="middle" dy="5">{{ node.name }}</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div v-else-if="currentModule === 'timeline'" class="timeline-module">
+          <h2 class="page-title">时间线</h2>
+          <div class="timeline-hint">拖动查看更多事件</div>
+          <div class="timeline-container" ref="timelineContainer" @mousedown="startTimelineDrag" @mousemove="onTimelineDrag" @mouseup="endTimelineDrag" @mouseleave="endTimelineDrag">
+            <div class="timeline-track" :style="{transform: 'translateX(' + timelineOffset + 'px)'}">
+              <div v-for="event in timelineEvents" :key="event.id" class="timeline-event" :style="{left: event.position + 'px'}">
+                <div class="event-marker"></div>
+                <div class="event-card">
+                  <div class="event-time">{{ event.time }}</div>
+                  <div class="event-title">{{ event.title }}</div>
+                  <div class="event-desc">{{ event.description }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="currentModule === 'clues'" class="clues-module">
+          <h2 class="page-title">伏笔追踪</h2>
+          <div class="clues-grid">
+            <div v-for="clue in cluesList" :key="clue.id" class="clue-card">
+              <div class="clue-header">
+                <span :class="['clue-status', clue.status]">{{ clue.status === 'pending' ? '待回收' : '已回收' }}</span>
+                <span class="clue-chapter">{{ clue.chapter }}</span>
+              </div>
+              <div class="clue-title">{{ clue.title }}</div>
+              <div class="clue-content">{{ clue.content }}</div>
+              <div v-if="clue.resolution" class="clue-resolution">
+                <div class="resolution-label">回收位置</div>
+                <div class="resolution-text">{{ clue.resolution }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="content-view">
+          <div class="content-header">
+            <h2 class="page-title">{{ currentTitle }}</h2>
+            <div class="content-actions">
+              <button @click="copyContent(currentContent)" class="action-btn">复制</button>
+              <button @click="downloadFile(currentFile, currentContent)" class="action-btn">下载</button>
+            </div>
+          </div>
+          <div class="markdown-body" v-html="renderedContent"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
