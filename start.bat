@@ -17,7 +17,7 @@ if %errorlevel% equ 0 (
     timeout /t 1 /nobreak >nul
 )
 
-echo [2/2] 启动 HTTP 服务器...
+echo [2/2] 启动 Viewer 服务 ^(含向量搜索 API^)...
 echo.
 echo ========================================
 echo   服务已启动！
@@ -26,4 +26,4 @@ echo   按 Ctrl+C 可停止服务
 echo ========================================
 echo.
 
-python -m http.server 8080
+python scripts\viewer_server.py --port 8080

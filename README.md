@@ -66,9 +66,9 @@
 cd 你的文件夹
 ```
 
-2. **启动本地服务器**
+2. **启动 Viewer 服务（含向量搜索 API）**
 ```bash
-python -m http.server 8080
+python scripts/viewer_server.py --port 8080
 ```
 
 3. **打开浏览器**
@@ -79,7 +79,7 @@ http://localhost:8080/viewer/
 4. **停止服务**
 - 按 `Ctrl + C` 停止服务
 
-就这么简单！无需安装依赖，无需构建步骤。
+就这么简单！无需前端构建步骤。
 
 ## 🧠 向量数据库初始化（语义检索）
 
@@ -120,6 +120,7 @@ python scripts/vector-search.py --status
 - 首次构建会下载中文 embedding 模型（约数百 MB）
 - 索引目录为 `.vector-db/`（已加入 `.gitignore`）
 - 新增章节后建议执行一次 `--rebuild`
+- `viewer` 的语义搜索依赖本地 API，请使用 `start.bat` 或 `python scripts/viewer_server.py --port 8080` 启动
 
 ## 📁 文件结构
 
@@ -149,7 +150,9 @@ python scripts/vector-search.py --status
 ├── novel-fulltext/              # 小说正文（按卷/章组织）
 ├── scripts/                     # 向量检索脚本与依赖清单
 │   ├── vector-search.py
+│   ├── vector_search_core.py
 │   ├── check-vector.py
+│   ├── viewer_server.py
 │   └── requirements-vector.txt
 ├── docs/                        # 文档
 │   └── plans/                   # 设计文档

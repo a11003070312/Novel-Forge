@@ -22,9 +22,15 @@ body { font-family: 'Noto Serif SC', 'Crimson Pro', serif; color: #e5e7eb; backg
 .close-search { padding: 8px 16px; background: #334155; color: #e5e7eb; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; }
 .close-search:hover { background: #475569; }
 .search-results { margin-top: 20px; max-height: 400px; overflow-y: auto; }
+.search-meta { margin-top: 12px; display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #94a3b8; font-family: 'Inter', sans-serif; }
+.search-error { color: #fca5a5; }
+.search-section { margin-bottom: 20px; }
+.search-section-title { font-size: 13px; font-family: 'Inter', sans-serif; color: #93c5fd; margin-bottom: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
 .search-result-card { background: #0f172a; padding: 16px; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease; }
 .search-result-card:hover { background: #1e293b; transform: translateY(-2px); }
+.search-result-card.vector { border-left: 3px solid #60a5fa; }
 .result-path { font-size: 13px; color: #94a3b8; margin-bottom: 8px; font-family: 'Inter', sans-serif; }
+.result-score { font-size: 12px; color: #60a5fa; margin-bottom: 8px; font-family: 'Inter', sans-serif; }
 .result-snippet { font-size: 14px; color: #cbd5e1; line-height: 1.6; }
 .result-snippet mark { background: #3b82f6; color: #ffffff; padding: 2px 4px; border-radius: 3px; }
 .no-results { text-align: center; padding: 40px; color: #64748b; font-size: 15px; }

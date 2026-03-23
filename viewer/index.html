@@ -67,16 +67,39 @@
       <main class="main-content">
         <div v-if="showSearch" class="search-panel">
           <div class="search-header">
-            <input type="text" v-model="searchQuery" @input="handleSearch" placeholder="搜索内容..." class="search-input" autofocus>
+            <input type="text" v-model="searchQuery" @input="handleSearch" placeholder="搜索内容（关键词 + 语义）..." class="search-input" autofocus>
             <button @click="toggleSearch" class="close-search">✕</button>
           </div>
-          <div v-if="searchResults.length > 0" class="search-results">
-            <div v-for="result in searchResults" :key="result.path" class="search-result-card" @click="viewFile(result.path)">
-              <div class="result-path">{{ result.path }}</div>
-              <div class="result-snippet" v-html="result.snippet"></div>
+          <div class="search-meta" v-if="searchQuery">
+            <span>关键词 {{ searchResults.length }} 条</span>
+            <span>语义 {{ vectorSearchResults.length }} 条</span>
+            <span v-if="vectorSearchLoading">语义搜索中...</span>
+            <span v-else-if="vectorSearchError" class="search-error">{{ vectorSearchError }}</span>
+          </div>
+          <div class="search-results" v-if="searchQuery">
+            <div class="search-section">
+              <div class="search-section-title">关键词结果</div>
+              <div v-if="searchResults.length > 0">
+                <div v-for="result in searchResults" :key="'kw-' + result.path + result.snippet" class="search-result-card" @click="viewFile(result.path)">
+                  <div class="result-path">{{ result.path }}</div>
+                  <div class="result-snippet" v-html="result.snippet"></div>
+                </div>
+              </div>
+              <div v-else class="no-results">关键词未命中</div>
+            </div>
+            <div class="search-section">
+              <div class="search-section-title">向量结果</div>
+              <div v-if="vectorSearchResults.length > 0">
+                <div v-for="result in vectorSearchResults" :key="'vec-' + result.path + result.score + result.snippet" class="search-result-card vector" @click="viewFile(result.path)">
+                  <div class="result-path">{{ result.path }}</div>
+                  <div class="result-score">相关度 {{ Number(result.score).toFixed(3) }}</div>
+                  <div class="result-snippet" v-html="highlightKeyword(result.snippet, searchQuery)"></div>
+                </div>
+              </div>
+              <div v-else-if="vectorSearchLoading" class="no-results">语义检索进行中...</div>
+              <div v-else class="no-results">语义检索暂无结果</div>
             </div>
           </div>
-          <div v-else-if="searchQuery" class="no-results">未找到匹配结果</div>
         </div>
         <div v-if="currentModule === 'dashboard'" class="dashboard">
           <h2 class="page-title">创作概览</h2>

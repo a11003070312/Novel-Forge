@@ -43,6 +43,10 @@ createApp({
       renderedContent: "",
       searchQuery: "",
       searchResults: [],
+      vectorSearchResults: [],
+      vectorSearchLoading: false,
+      vectorSearchError: "",
+      vectorSearchDebounceId: null,
       showSearch: false,
       allFiles: [],
       contentIndex: DEFAULT_CONTENT_INDEX,
@@ -80,8 +84,29 @@ createApp({
     this.initializeNovelReader();
     this.initializeKeyCharacterPanel();
     this.calculateStats();
+    this.checkVectorStatus();
   },
   methods: {
+    async checkVectorStatus() {
+      try {
+        const response = await fetch("/api/vector-status");
+        if (!response.ok) {
+          return;
+        }
+        const status = await response.json();
+        if (!status.ok) {
+          return;
+        }
+        if (Array.isArray(status.deps_missing) && status.deps_missing.length > 0) {
+          this.vectorSearchError = `语义搜索依赖缺失: ${status.deps_missing.join(", ")}`;
+        } else if (!status.index_exists) {
+          this.vectorSearchError = "语义索引未建立，首次检索会自动构建";
+        }
+      } catch (e) {
+        // Keep viewer usable under pure static hosting.
+      }
+    },
+
     async loadContentIndex() {
       try {
         const response = await fetch("./content-index.json");
@@ -250,15 +275,34 @@ createApp({
       if (!this.showSearch) {
         this.searchQuery = "";
         this.searchResults = [];
+        this.vectorSearchResults = [];
+        this.vectorSearchLoading = false;
+        this.vectorSearchError = "";
+        if (this.vectorSearchDebounceId) {
+          clearTimeout(this.vectorSearchDebounceId);
+          this.vectorSearchDebounceId = null;
+        }
       }
     },
 
     handleSearch() {
       if (!this.searchQuery.trim()) {
         this.searchResults = [];
+        this.vectorSearchResults = [];
+        this.vectorSearchLoading = false;
+        this.vectorSearchError = "";
+        if (this.vectorSearchDebounceId) {
+          clearTimeout(this.vectorSearchDebounceId);
+          this.vectorSearchDebounceId = null;
+        }
         return;
       }
 
+      this.runKeywordSearch();
+      this.scheduleVectorSearch();
+    },
+
+    runKeywordSearch() {
       const keyword = this.searchQuery.toLowerCase();
       this.searchResults = [];
 
@@ -274,6 +318,54 @@ createApp({
           });
         }
       });
+    },
+
+    scheduleVectorSearch() {
+      if (this.vectorSearchDebounceId) {
+        clearTimeout(this.vectorSearchDebounceId);
+      }
+      this.vectorSearchDebounceId = setTimeout(() => {
+        this.runVectorSearch();
+      }, 500);
+    },
+
+    async runVectorSearch() {
+      const query = this.searchQuery.trim();
+      if (!query) {
+        this.vectorSearchResults = [];
+        return;
+      }
+
+      this.vectorSearchLoading = true;
+      this.vectorSearchError = "";
+
+      try {
+        const url = `/api/vector-search?q=${encodeURIComponent(query)}&top=6`;
+        const response = await fetch(url);
+        const payload = await response.json();
+
+        if (!response.ok || !payload.ok) {
+          const message = payload.message || "语义检索不可用";
+          this.vectorSearchError = message;
+          this.vectorSearchResults = [];
+          return;
+        }
+
+        this.vectorSearchResults = (payload.results || []).map(item => ({
+          path: item.path || "",
+          score: item.score ?? 0,
+          snippet: item.snippet || "",
+          text: item.text || ""
+        }));
+        if (payload.rebuilt) {
+          this.vectorSearchError = "语义索引已自动重建";
+        }
+      } catch (e) {
+        this.vectorSearchResults = [];
+        this.vectorSearchError = "语义服务不可用（请使用 start.bat 启动）";
+      } finally {
+        this.vectorSearchLoading = false;
+      }
     },
 
     extractSnippet(content, keyword) {
@@ -304,6 +396,8 @@ createApp({
       this.showSearch = false;
       this.searchQuery = "";
       this.searchResults = [];
+      this.vectorSearchResults = [];
+      this.vectorSearchLoading = false;
     },
 
     async openNovelChapter(chapter) {
